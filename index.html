@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connecting...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .loader {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #00aa6d;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+    <script>
+        async function secureRedirect() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            
+            // Aapka secure web app URL yahan add ho gaya hai
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbypTWYa5q81EmkopshZxolZn87YiFsAE9vWTXijbfZgfVdn0C5toQ0PEZVmcI791X_q/exec';
+
+            if (!id) {
+                document.getElementById('msg').innerText = "Invalid QR Code";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${scriptURL}?id=${id}`);
+                const data = await response.json();
+
+                if (data.target) {
+                    // Security Layer: Yeh browser history me loop nahi banata, user seedha redirect hoga
+                    window.location.replace(data.target);
+                } else {
+                    document.getElementById('msg').innerText = "QR Code Not Activated Yet";
+                }
+            } catch (err) {
+                document.getElementById('msg').innerText = "Connection Error. Please try again.";
+            }
+        }
+        window.onload = secureRedirect;
+    </script>
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+        <p id="msg">Please wait, redirecting...</p>
+    </div>
+</body>
+</html>
